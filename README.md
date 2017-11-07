@@ -1,6 +1,6 @@
 ##oauth2-demo
 
-### 用最简的demo介绍三种oauth2生成token的方式
+### 用demo介绍三种oauth2生成token的方式
   在AuthorizationServerConfigurer中，该类继承自AuthorizationServerConfigurerAdapter类，重写configure(ClientDetailsServiceConfigurer)；在此方法中定义三个client；详见代码
   
   
