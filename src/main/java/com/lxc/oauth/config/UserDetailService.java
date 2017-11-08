@@ -1,8 +1,8 @@
 package com.lxc.oauth.config;
 
+import com.lxc.oauth.config.domain.OUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -31,6 +31,8 @@ public class UserDetailService implements org.springframework.security.core.user
         List<GrantedAuthority> grantedAuthorities = auths.stream()
                 .map(authority -> new SimpleGrantedAuthority(authority))
                 .collect(Collectors.toList());
-        return new User(userName, password, grantedAuthorities);
+        OUser user = new OUser(userName, password, grantedAuthorities);
+        user.setOrganName("测试机构名称");
+        return user;
     }
 }
