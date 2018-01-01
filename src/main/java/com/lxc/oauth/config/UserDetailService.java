@@ -19,7 +19,7 @@ public class UserDetailService implements org.springframework.security.core.user
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        //TODO 从数据库校验用户数据
+        // TODO 从数据库校验用户数据
         String userName = "admin";
         if (!userName.equals(username)) {
             throw new UsernameNotFoundException(String.format("用户信息不存在%s", username));

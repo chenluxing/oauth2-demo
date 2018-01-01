@@ -16,6 +16,18 @@ security:
     resource:
       filter-order: 3
 
+eureka:
+  client:
+     serviceUrl:
+       defaultZone: http://localhost:8761/eureka/  #注册中心地址
+
 logging:
   level:
     org.springframework: DEBUG    # 开启DEBUG日志
+
+encrypt:
+  key-store:
+    location: classpath:/serverKeystore.jks
+    alias: alias1
+    password: 123456
+    secret: 654321

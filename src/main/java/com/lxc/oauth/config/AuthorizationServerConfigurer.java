@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
-import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 import java.security.KeyPair;
 
@@ -26,13 +26,6 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
 
     @Autowired
     private AuthenticationManager authenticationManager;
-    @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
-
-    @Bean
-    public RedisTokenStore tokenStore() {
-        return new RedisTokenStore(redisConnectionFactory);
-    }
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -47,29 +40,38 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
                 .withClient("client_1")
                 .scopes("select")
                 .authorizedGrantTypes("authorization_code", "refresh_token", "implicit")
+                .accessTokenValiditySeconds(3600 * 24 * 30)
+                .refreshTokenValiditySeconds(3600 * 24 * 30 * 2)
                 .and()
                 .withClient("client_2")
                 .scopes("select")
-                .authorizedGrantTypes("password", "refresh_token", "implicit")
+                .authorizedGrantTypes("password", "refresh_token", "implicit", "default")
+                .accessTokenValiditySeconds(3600 * 24 * 30)
+                .refreshTokenValiditySeconds(3600 * 24 * 30 * 2)
                 .and()
                 .withClient("client_3")
                 .scopes("select")
                 .secret("123456")
                 .authorizedGrantTypes("client_credentials", "refresh_token", "implicit")
+                .accessTokenValiditySeconds(3600 * 24 * 30)
+                .refreshTokenValiditySeconds(3600 * 24 * 30 * 2)
                 ;
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.authenticationManager(authenticationManager)
-                .tokenStore(tokenStore());
-//        endpoints.accessTokenConverter(jwtAccessTokenConverter());
+        endpoints.authenticationManager(authenticationManager);
+        endpoints.tokenStore(tokenStore());
+        endpoints.accessTokenConverter(jwtAccessTokenConverter());  // 必须要写，不然生成不了jwt；而是原始的token
+        endpoints.reuseRefreshTokens(false);
     }
 
-    /**
-     * JWT token管理方式
-     * @return
-     */
+    @Bean
+    public TokenStore tokenStore() {
+        return new JwtTokenStore(jwtAccessTokenConverter());
+    }
+
+    @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         KeyPair keyPair = new KeyStoreKeyFactory(
@@ -78,4 +80,5 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
         converter.setKeyPair(keyPair);
         return converter;
     }
+
 }
