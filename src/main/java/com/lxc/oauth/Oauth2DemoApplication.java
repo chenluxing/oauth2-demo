@@ -8,6 +8,6 @@ public class Oauth2DemoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(Oauth2DemoApplication.class, args);
-        System.out.println("this is a test1");
+        System.out.println("this is a test222222");
     }
 }
