@@ -11,9 +11,6 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @auth chenlx
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Oauth2DemoApplication.class)
 public class TokenServiceTest {
@@ -26,7 +23,8 @@ public class TokenServiceTest {
         String clientId = "client_2";
         Map param = new HashMap();
         param.put("client_id", clientId);
-        param.put("grant_type", "default");
+        param.put("grant_type", "password");
+        param.put("password", "123456");
         System.out.println(tokenService.getAccessToken(clientId, param));
     }
 

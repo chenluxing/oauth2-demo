@@ -28,11 +28,11 @@ public class ResourceServerConfigurer extends ResourceServerConfigurerAdapter {
         http.logout().logoutSuccessUrl("/index") .permitAll();
 
         http.authorizeRequests()
-                .antMatchers("/index").permitAll()          // 访问首页无需权限认证
-                .antMatchers("/api/public/**").permitAll()       // 所有登录和未登录人员都可以访问
-                .antMatchers("/api/**").authenticated()     // 配置api访问控制，必须认证过后才可以访问
+            .antMatchers("/index").permitAll()          // 访问首页无需权限认证
+            .antMatchers("/api/public/**").permitAll()       // 所有登录和未登录人员都可以访问
                 .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")   // 管理员权限才可访问/admin,否则提示403
-                .anyRequest().authenticated()      // 其他所有资源都需要权限认证
+                .antMatchers("/api/**").authenticated()     // 配置api访问控制，必须认证过后才可以访问
+            .anyRequest().authenticated()      // 其他所有资源都需要权限认证
         ;
     }
 
